@@ -7,9 +7,7 @@
 <title>مهامي</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -99,7 +97,7 @@ button{
 
 .tabs{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(5,1fr);
   gap:7px;
   margin-bottom:15px;
 }
@@ -117,7 +115,8 @@ button{
   color:white;
 }
 
-.task{
+.task,
+.reminder{
   border:1px solid #e0e8e4;
   border-radius:15px;
   padding:14px;
@@ -132,7 +131,8 @@ button{
   text-decoration:line-through;
 }
 
-.task-title{
+.task-title,
+.reminder-title{
   font-weight:bold;
   font-size:17px;
   margin-bottom:7px;
@@ -231,9 +231,41 @@ button{
   display:none;
 }
 
-@media(max-width:450px){
+.reminder.active{
+  border-right:5px solid #087f5b;
+}
+
+.reminder.off{
+  opacity:.6;
+  border-right:5px solid #aaa;
+}
+
+.reminder-badge{
+  display:inline-block;
+  background:#e8f1ed;
+  color:#073b32;
+  border-radius:20px;
+  padding:4px 9px;
+  font-size:12px;
+  margin-bottom:7px;
+}
+
+.notification-box{
+  background:#f7faf8;
+  border-radius:14px;
+  padding:12px;
+  margin-top:10px;
+  font-size:13px;
+  line-height:1.8;
+}
+
+@media(max-width:520px){
   .tabs{
     grid-template-columns:repeat(2,1fr);
+  }
+
+  .tabs .tab:last-child{
+    grid-column:span 2;
   }
 
   .stats{
@@ -253,87 +285,222 @@ button{
 <div class="container">
 
   <div class="tabs">
-    <button class="tab active" onclick="showPage('tasks',this)">📋 المهام</button>
-    <button class="tab" onclick="showPage('today',this)">📅 اليوم</button>
-    <button class="tab" onclick="showPage('completed',this)">✅ المكتملة</button>
-    <button class="tab" onclick="showPage('report',this)">📊 التقرير</button>
+
+    <button class="tab active"
+      onclick="showPage('tasks',this)">
+      📋 المهام
+    </button>
+
+    <button class="tab"
+      onclick="showPage('today',this)">
+      📅 اليوم
+    </button>
+
+    <button class="tab"
+      onclick="showPage('completed',this)">
+      ✅ المكتملة
+    </button>
+
+    <button class="tab"
+      onclick="showPage('reminders',this)">
+      🔔 التذكيرات
+    </button>
+
+    <button class="tab"
+      onclick="showPage('report',this)">
+      📊 التقرير
+    </button>
+
   </div>
 
 
-  <!-- إضافة مهمة -->
+  <!-- المهام -->
+
   <section id="tasksPage">
 
     <div class="card">
+
       <h2>➕ إضافة مهمة جديدة</h2>
 
-      <input id="taskTitle" type="text" placeholder="ما هي المهمة؟">
+      <input id="taskTitle"
+        type="text"
+        placeholder="ما هي المهمة؟">
 
       <select id="taskPriority">
-        <option value="high">🔴 عاجلة</option>
-        <option value="medium" selected>🟡 عادية</option>
-        <option value="low">🟢 منخفضة</option>
+
+        <option value="high">
+          🔴 عاجلة
+        </option>
+
+        <option value="medium" selected>
+          🟡 عادية
+        </option>
+
+        <option value="low">
+          🟢 منخفضة
+        </option>
+
       </select>
 
       <label>📅 موعد التسليم</label>
+
       <input id="taskDate" type="date">
 
       <label>⏰ وقت التسليم</label>
+
       <input id="taskTime" type="time">
 
-      <textarea id="taskNotes" placeholder="ملاحظات عن المهمة..."></textarea>
+      <textarea
+        id="taskNotes"
+        placeholder="ملاحظات عن المهمة...">
+      </textarea>
 
-      <button class="primary" onclick="addTask()">➕ إضافة المهمة</button>
+      <button class="primary"
+        onclick="addTask()">
+        ➕ إضافة المهمة
+      </button>
+
     </div>
 
+
     <div class="card">
+
       <h2>🔎 البحث في المهام</h2>
+
       <input
         id="searchInput"
         type="text"
         placeholder="اكتب اسم المهمة..."
-        oninput="renderTasks()"
-      >
+        oninput="renderTasks()">
+
     </div>
 
+
     <div class="card">
+
       <h2>📋 كل المهام</h2>
+
       <div id="allTasks"></div>
+
     </div>
 
   </section>
 
 
   <!-- اليوم -->
+
   <section id="todayPage" class="hidden">
 
     <div class="card">
+
       <h2>📅 مهام اليوم</h2>
+
       <div id="todayTasks"></div>
+
     </div>
 
   </section>
 
 
   <!-- المكتملة -->
+
   <section id="completedPage" class="hidden">
 
     <div class="card">
+
       <h2>✅ المهام المكتملة</h2>
+
       <div id="completedTasks"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- التذكيرات -->
+
+  <section id="remindersPage" class="hidden">
+
+    <div class="card">
+
+      <h2>🔔 إضافة تذكير جديد</h2>
+
+      <input
+        id="reminderTitle"
+        type="text"
+        placeholder="ما الذي تريد أن تتذكره؟">
+
+      <label>📅 التاريخ</label>
+
+      <input
+        id="reminderDate"
+        type="date">
+
+      <label>⏰ الوقت</label>
+
+      <input
+        id="reminderTime"
+        type="time">
+
+      <textarea
+        id="reminderNotes"
+        placeholder="ملاحظات التذكير...">
+      </textarea>
+
+      <button class="primary"
+        onclick="addReminder()">
+        🔔 إضافة التذكير
+      </button>
+
+      <div class="notification-box">
+
+        📱 <strong>إشعارات الهاتف</strong>
+
+        <br>
+
+        اضغط الزر التالي للسماح للتطبيق بإظهار الإشعارات عند توفر دعم الإشعارات في الجهاز.
+
+        <button
+          class="secondary"
+          style="width:100%;margin-top:8px"
+          onclick="requestNotificationPermission()">
+
+          🔔 السماح بالإشعارات
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>🔔 تذكيراتي</h2>
+
+      <div id="remindersList"></div>
+
     </div>
 
   </section>
 
 
   <!-- التقرير -->
+
   <section id="reportPage" class="hidden">
 
     <div class="card">
 
-      <h2 class="report-title">📊 التقرير الشهري</h2>
+      <h2 class="report-title">
+        📊 التقرير الشهري
+      </h2>
 
       <label>اختر الشهر</label>
-      <input id="reportMonth" type="month" onchange="renderReport()">
+
+      <input
+        id="reportMonth"
+        type="month"
+        onchange="renderReport()">
 
       <div class="stats">
 
@@ -363,20 +530,29 @@ button{
 
 
     <div class="card">
+
       <h2>📌 ملخص الشهر</h2>
+
       <div id="reportSummary"></div>
+
     </div>
 
 
     <div class="card">
+
       <h2>🏆 ما أنجزته خلال الشهر</h2>
+
       <div id="reportCompleted"></div>
+
     </div>
 
 
     <div class="card">
+
       <h2>⏳ المهام غير المكتملة</h2>
+
       <div id="reportRemaining"></div>
+
     </div>
 
 
@@ -387,16 +563,20 @@ button{
       <textarea
         id="monthlyNotes"
         placeholder="اكتب أهم إنجازاتك، وما يحتاج إلى اهتمام، وأي ملاحظات للشهر..."
-        oninput="saveMonthlyNotes()"
-      ></textarea>
+        oninput="saveMonthlyNotes()">
+      </textarea>
 
     </div>
 
 
     <div class="card">
 
-      <button class="primary" onclick="printReport()">
+      <button
+        class="primary"
+        onclick="printReport()">
+
         📄 طباعة / حفظ التقرير
+
       </button>
 
     </div>
@@ -408,79 +588,176 @@ button{
 
 <script>
 
-let tasks = JSON.parse(localStorage.getItem("mahamiTasks")) || [];
+
+// ===============================
+// المهام
+// ===============================
+
+let tasks =
+  JSON.parse(
+    localStorage.getItem("mahamiTasks")
+  ) || [];
+
+
+// ===============================
+// التذكيرات
+// ===============================
+
+let reminders =
+  JSON.parse(
+    localStorage.getItem("mahamiReminders")
+  ) || [];
+
+
+// ===============================
+// الملاحظات الشهرية
+// ===============================
 
 let monthlyNotes =
-  JSON.parse(localStorage.getItem("mahamiMonthlyNotes")) || {};
+  JSON.parse(
+    localStorage.getItem("mahamiMonthlyNotes")
+  ) || {};
 
+
+// ===============================
+// حفظ البيانات
+// ===============================
 
 function saveTasks(){
-  localStorage.setItem("mahamiTasks", JSON.stringify(tasks));
+
+  localStorage.setItem(
+    "mahamiTasks",
+    JSON.stringify(tasks)
+  );
+
 }
 
+
+function saveReminders(){
+
+  localStorage.setItem(
+    "mahamiReminders",
+    JSON.stringify(reminders)
+  );
+
+}
+
+
+// ===============================
+// إنشاء رقم
+// ===============================
 
 function generateId(){
-  return Date.now() + Math.random().toString(16).slice(2);
+
+  return Date.now() +
+    Math.random()
+    .toString(16)
+    .slice(2);
+
 }
 
+
+// ===============================
+// تاريخ اليوم
+// ===============================
 
 function todayString(){
 
   const d = new Date();
 
-  const year = d.getFullYear();
+  const year =
+    d.getFullYear();
 
-  const month = String(d.getMonth()+1).padStart(2,"0");
+  const month =
+    String(d.getMonth()+1)
+    .padStart(2,"0");
 
-  const day = String(d.getDate()).padStart(2,"0");
+  const day =
+    String(d.getDate())
+    .padStart(2,"0");
 
   return `${year}-${month}-${day}`;
+
 }
 
+
+// ===============================
+// الشهر الحالي
+// ===============================
 
 function currentMonth(){
 
   const d = new Date();
 
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+  return `${d.getFullYear()}-${String(
+    d.getMonth()+1
+  ).padStart(2,"0")}`;
 
 }
 
 
-document.getElementById("taskDate").value = todayString();
+// ===============================
+// القيم الافتراضية
+// ===============================
 
-document.getElementById("reportMonth").value = currentMonth();
+document.getElementById(
+  "taskDate"
+).value = todayString();
 
+document.getElementById(
+  "reportMonth"
+).value = currentMonth();
+
+document.getElementById(
+  "reminderDate"
+).value = todayString();
+
+
+// ===============================
+// إضافة مهمة
+// ===============================
 
 function addTask(){
 
   const title =
-    document.getElementById("taskTitle").value.trim();
+    document.getElementById(
+      "taskTitle"
+    ).value.trim();
 
   if(!title){
 
     alert("اكتب اسم المهمة أولًا");
 
     return;
+
   }
+
 
   const task = {
 
-    id: generateId(),
+    id:generateId(),
 
     title:title,
 
     priority:
-      document.getElementById("taskPriority").value,
+      document.getElementById(
+        "taskPriority"
+      ).value,
 
     date:
-      document.getElementById("taskDate").value,
+      document.getElementById(
+        "taskDate"
+      ).value,
 
     time:
-      document.getElementById("taskTime").value,
+      document.getElementById(
+        "taskTime"
+      ).value,
 
     notes:
-      document.getElementById("taskNotes").value.trim(),
+      document.getElementById(
+        "taskNotes"
+      ).value.trim(),
 
     createdAt:
       new Date().toISOString(),
@@ -496,46 +773,107 @@ function addTask(){
 
   saveTasks();
 
-  document.getElementById("taskTitle").value = "";
 
-  document.getElementById("taskTime").value = "";
+  document.getElementById(
+    "taskTitle"
+  ).value = "";
 
-  document.getElementById("taskNotes").value = "";
+  document.getElementById(
+    "taskTime"
+  ).value = "";
+
+  document.getElementById(
+    "taskNotes"
+  ).value = "";
+
 
   renderAll();
 
 }
 
 
+// ===============================
+// أولوية المهمة
+// ===============================
+
 function priorityText(priority){
 
   if(priority === "high")
-    return '<span class="priority high">🔴 عاجلة</span>';
+
+    return `
+      <span class="priority high">
+        🔴 عاجلة
+      </span>
+    `;
+
 
   if(priority === "medium")
-    return '<span class="priority medium">🟡 عادية</span>';
 
-  return '<span class="priority low">🟢 منخفضة</span>';
+    return `
+      <span class="priority medium">
+        🟡 عادية
+      </span>
+    `;
+
+
+  return `
+    <span class="priority low">
+      🟢 منخفضة
+    </span>
+  `;
 
 }
 
 
+// ===============================
+// تنسيق التاريخ
+// ===============================
+
 function formatDate(date){
 
-  if(!date) return "بدون موعد";
+  if(!date)
+    return "بدون موعد";
 
-  const parts = date.split("-");
+  const parts =
+    date.split("-");
 
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
 
 }
 
 
+// ===============================
+// حماية النص
+// ===============================
+
+function escapeHTML(text){
+
+  return String(text)
+
+    .replace(/&/g,"&amp;")
+
+    .replace(/</g,"&lt;")
+
+    .replace(/>/g,"&gt;")
+
+    .replace(/"/g,"&quot;")
+
+    .replace(/'/g,"&#039;");
+
+}
+
+
+// ===============================
+// شكل المهمة
+// ===============================
+
 function taskHTML(task){
 
   return `
 
-    <div class="task ${task.completed ? "done" : ""}">
+    <div class="task ${
+      task.completed ? "done" : ""
+    }">
 
       <div>
         ${priorityText(task.priority)}
@@ -550,24 +888,40 @@ function taskHTML(task){
         📅 التسليم:
         ${formatDate(task.date)}
 
-        ${task.time ? " — ⏰ " + task.time : ""}
+        ${
+          task.time
+          ? " — ⏰ " + task.time
+          : ""
+        }
 
         <br>
 
         📝 الملاحظات:
-        ${task.notes ? escapeHTML(task.notes) : "لا توجد"}
+        ${
+          task.notes
+          ? escapeHTML(task.notes)
+          : "لا توجد"
+        }
 
         <br>
 
         📌 أضيفت:
-        ${formatDate(task.createdAt.substring(0,10))}
+        ${formatDate(
+          task.createdAt.substring(0,10)
+        )}
 
         ${
           task.completedAt
+
           ?
+
           "<br>✅ أُنجزت: " +
-          formatDate(task.completedAt.substring(0,10))
+          formatDate(
+            task.completedAt.substring(0,10)
+          )
+
           :
+
           ""
         }
 
@@ -578,29 +932,57 @@ function taskHTML(task){
 
         ${
           task.completed
+
           ?
-          `<button class="secondary" onclick="uncompleteTask('${task.id}')">
+
+          `
+          <button
+            class="secondary"
+            onclick="uncompleteTask('${task.id}')">
+
             ↩️ إعادة للمفتوحة
-          </button>`
+
+          </button>
+          `
+
           :
-          `<button class="secondary" onclick="completeTask('${task.id}')">
+
+          `
+          <button
+            class="secondary"
+            onclick="completeTask('${task.id}')">
+
             ✅ تم الإنجاز
-          </button>`
+
+          </button>
+          `
         }
 
 
-        <button class="secondary" onclick="editTask('${task.id}')">
+        <button
+          class="secondary"
+          onclick="editTask('${task.id}')">
+
           ✏️ تعديل
+
         </button>
 
 
-        <button class="secondary" onclick="tomorrowTask('${task.id}')">
+        <button
+          class="secondary"
+          onclick="tomorrowTask('${task.id}')">
+
           🔄 غدًا
+
         </button>
 
 
-        <button class="danger" onclick="deleteTask('${task.id}')">
+        <button
+          class="danger"
+          onclick="deleteTask('${task.id}')">
+
           🗑️ حذف
+
         </button>
 
       </div>
@@ -612,38 +994,37 @@ function taskHTML(task){
 }
 
 
-function escapeHTML(text){
-
-  return text
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
+// ===============================
+// عرض كل المهام
+// ===============================
 
 function renderTasks(){
 
   const search =
-    document.getElementById("searchInput")
-    .value
+    document.getElementById(
+      "searchInput"
+    ).value
     .trim()
     .toLowerCase();
 
 
-  let filtered = tasks.filter(task => {
+  const filtered =
+    tasks.filter(task => {
 
-    if(!search) return true;
+      if(!search)
+        return true;
 
-    return task.title.toLowerCase().includes(search);
+      return task.title
+        .toLowerCase()
+        .includes(search);
 
-  });
+    });
 
 
   const box =
-    document.getElementById("allTasks");
+    document.getElementById(
+      "allTasks"
+    );
 
 
   if(filtered.length === 0){
@@ -652,25 +1033,39 @@ function renderTasks(){
       '<div class="empty">لا توجد مهام حاليًا 📋</div>';
 
     return;
+
   }
 
 
   box.innerHTML =
-    filtered.map(taskHTML).join("");
+    filtered
+      .map(taskHTML)
+      .join("");
 
 }
 
 
+// ===============================
+// مهام اليوم
+// ===============================
+
 function renderToday(){
 
-  const today = todayString();
+  const today =
+    todayString();
+
 
   const list =
-    tasks.filter(task => task.date === today && !task.completed);
+    tasks.filter(task =>
+      task.date === today &&
+      !task.completed
+    );
 
 
   const box =
-    document.getElementById("todayTasks");
+    document.getElementById(
+      "todayTasks"
+    );
 
 
   if(list.length === 0){
@@ -679,6 +1074,7 @@ function renderToday(){
       '<div class="empty">🎉 لا توجد مهام متبقية لليوم</div>';
 
     return;
+
   }
 
 
@@ -688,14 +1084,22 @@ function renderToday(){
 }
 
 
+// ===============================
+// المهام المكتملة
+// ===============================
+
 function renderCompleted(){
 
   const list =
-    tasks.filter(task => task.completed);
+    tasks.filter(
+      task => task.completed
+    );
 
 
   const box =
-    document.getElementById("completedTasks");
+    document.getElementById(
+      "completedTasks"
+    );
 
 
   if(list.length === 0){
@@ -704,6 +1108,7 @@ function renderCompleted(){
       '<div class="empty">لم تنجز أي مهمة بعد.</div>';
 
     return;
+
   }
 
 
@@ -713,12 +1118,19 @@ function renderCompleted(){
 }
 
 
+// ===============================
+// إنجاز المهمة
+// ===============================
+
 function completeTask(id){
 
   const task =
-    tasks.find(t => t.id === id);
+    tasks.find(
+      t => t.id === id
+    );
 
   if(!task) return;
+
 
   task.completed = true;
 
@@ -733,30 +1145,49 @@ function completeTask(id){
 }
 
 
+// ===============================
+// إعادة المهمة
+// ===============================
+
 function uncompleteTask(id){
 
   const task =
-    tasks.find(t => t.id === id);
+    tasks.find(
+      t => t.id === id
+    );
 
   if(!task) return;
+
 
   task.completed = false;
 
   task.completedAt = null;
 
+
   saveTasks();
 
   renderAll();
 
 }
 
+
+// ===============================
+// حذف المهمة
+// ===============================
 
 function deleteTask(id){
 
-  if(!confirm("هل تريد حذف هذه المهمة؟")) return;
+  if(!confirm(
+    "هل تريد حذف هذه المهمة؟"
+  ))
+    return;
+
 
   tasks =
-    tasks.filter(t => t.id !== id);
+    tasks.filter(
+      t => t.id !== id
+    );
+
 
   saveTasks();
 
@@ -764,24 +1195,38 @@ function deleteTask(id){
 
 }
 
+
+// ===============================
+// تعديل المهمة
+// ===============================
 
 function editTask(id){
 
   const task =
-    tasks.find(t => t.id === id);
+    tasks.find(
+      t => t.id === id
+    );
 
   if(!task) return;
 
 
   const title =
-    prompt("عدّل اسم المهمة:",task.title);
+    prompt(
+      "عدّل اسم المهمة:",
+      task.title
+    );
 
-  if(title === null) return;
 
-  if(!title.trim()) return;
+  if(title === null)
+    return;
 
 
-  task.title = title.trim();
+  if(!title.trim())
+    return;
+
+
+  task.title =
+    title.trim();
 
 
   const notes =
@@ -789,6 +1234,7 @@ function editTask(id){
       "عدّل الملاحظات:",
       task.notes || ""
     );
+
 
   if(notes !== null)
     task.notes = notes;
@@ -801,21 +1247,36 @@ function editTask(id){
 }
 
 
+// ===============================
+// نقل إلى الغد
+// ===============================
+
 function tomorrowTask(id){
 
   const task =
-    tasks.find(t => t.id === id);
+    tasks.find(
+      t => t.id === id
+    );
 
   if(!task) return;
 
 
-  const d = new Date();
+  const d =
+    new Date();
 
-  d.setDate(d.getDate()+1);
+  d.setDate(
+    d.getDate()+1
+  );
 
 
   task.date =
-    `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    `${d.getFullYear()}-${
+      String(d.getMonth()+1)
+      .padStart(2,"0")
+    }-${
+      String(d.getDate())
+      .padStart(2,"0")
+    }`;
 
 
   saveTasks();
@@ -823,48 +1284,656 @@ function tomorrowTask(id){
   renderAll();
 
 
-  alert("تم نقل المهمة إلى الغد 🔄");
+  alert(
+    "تم نقل المهمة إلى الغد 🔄"
+  );
 
 }
 
 
-function showPage(page,button){
+// ==================================================
+// التذكيرات
+// ==================================================
+
+
+// إضافة تذكير
+
+function addReminder(){
+
+  const title =
+    document.getElementById(
+      "reminderTitle"
+    ).value.trim();
+
+
+  const date =
+    document.getElementById(
+      "reminderDate"
+    ).value;
+
+
+  const time =
+    document.getElementById(
+      "reminderTime"
+    ).value;
+
+
+  const notes =
+    document.getElementById(
+      "reminderNotes"
+    ).value.trim();
+
+
+  if(!title){
+
+    alert(
+      "اكتب اسم التذكير أولًا"
+    );
+
+    return;
+
+  }
+
+
+  if(!date || !time){
+
+    alert(
+      "حدد التاريخ والوقت"
+    );
+
+    return;
+
+  }
+
+
+  const reminder = {
+
+    id:generateId(),
+
+    title:title,
+
+    date:date,
+
+    time:time,
+
+    notes:notes,
+
+    active:true,
+
+    notified:false,
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+  reminders.unshift(
+    reminder
+  );
+
+
+  saveReminders();
+
+
+  document.getElementById(
+    "reminderTitle"
+  ).value = "";
+
+  document.getElementById(
+    "reminderTime"
+  ).value = "";
+
+  document.getElementById(
+    "reminderNotes"
+  ).value = "";
+
+
+  renderReminders();
+
+
+  alert(
+    "تم حفظ التذكير 🔔"
+  );
+
+}
+
+
+// عرض التذكيرات
+
+function renderReminders(){
+
+  const box =
+    document.getElementById(
+      "remindersList"
+    );
+
+
+  if(reminders.length === 0){
+
+    box.innerHTML =
+      '<div class="empty">لا توجد تذكيرات حاليًا 🔔</div>';
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    reminders.map(
+      reminder => `
+
+      <div class="reminder ${
+        reminder.active
+        ? "active"
+        : "off"
+      }">
+
+        <span class="reminder-badge">
+
+          ${
+            reminder.active
+            ? "🔔 مفعّل"
+            : "🔕 متوقف"
+          }
+
+        </span>
+
+        <div class="reminder-title">
+
+          ${escapeHTML(
+            reminder.title
+          )}
+
+        </div>
+
+
+        <div class="meta">
+
+          📅 التاريخ:
+          ${formatDate(
+            reminder.date
+          )}
+
+          <br>
+
+          ⏰ الوقت:
+          ${escapeHTML(
+            reminder.time
+          )}
+
+          ${
+            reminder.notes
+            ?
+
+            `<br>📝 الملاحظات:
+             ${escapeHTML(
+               reminder.notes
+             )}`
+
+            :
+
+            ""
+          }
+
+        </div>
+
+
+        <div class="actions">
+
+          <button
+            class="secondary"
+            onclick="toggleReminder('${reminder.id}')">
+
+            ${
+              reminder.active
+              ? "🔕 إيقاف"
+              : "🔔 تشغيل"
+            }
+
+          </button>
+
+
+          <button
+            class="secondary"
+            onclick="editReminder('${reminder.id}')">
+
+            ✏️ تعديل
+
+          </button>
+
+
+          <button
+            class="danger"
+            onclick="deleteReminder('${reminder.id}')">
+
+            🗑️ حذف
+
+          </button>
+
+        </div>
+
+      </div>
+
+    `
+    ).join("");
+
+}
+
+
+// تشغيل / إيقاف
+
+function toggleReminder(id){
+
+  const reminder =
+    reminders.find(
+      r => r.id === id
+    );
+
+
+  if(!reminder) return;
+
+
+  reminder.active =
+    !reminder.active;
+
+
+  reminder.notified = false;
+
+
+  saveReminders();
+
+  renderReminders();
+
+}
+
+
+// تعديل التذكير
+
+function editReminder(id){
+
+  const reminder =
+    reminders.find(
+      r => r.id === id
+    );
+
+
+  if(!reminder) return;
+
+
+  const title =
+    prompt(
+      "عدّل اسم التذكير:",
+      reminder.title
+    );
+
+
+  if(title === null)
+    return;
+
+
+  if(!title.trim())
+    return;
+
+
+  reminder.title =
+    title.trim();
+
+
+  const notes =
+    prompt(
+      "عدّل الملاحظات:",
+      reminder.notes || ""
+    );
+
+
+  if(notes !== null)
+    reminder.notes = notes;
+
+
+  saveReminders();
+
+  renderReminders();
+
+}
+
+
+// حذف التذكير
+
+function deleteReminder(id){
+
+  if(!confirm(
+    "هل تريد حذف هذا التذكير؟"
+  ))
+    return;
+
+
+  reminders =
+    reminders.filter(
+      r => r.id !== id
+    );
+
+
+  saveReminders();
+
+  renderReminders();
+
+}
+
+
+// ==================================================
+// إشعارات المتصفح
+// ==================================================
+
+async function requestNotificationPermission(){
+
+  if(!("Notification" in window)){
+
+    alert(
+      "هذا الجهاز أو المتصفح لا يدعم إشعارات المتصفح."
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    const permission =
+      await Notification.requestPermission();
+
+
+    if(permission === "granted"){
+
+      alert(
+        "تم السماح بالإشعارات 🔔"
+      );
+
+      new Notification(
+        "مهامي",
+        {
+          body:"تم تفعيل إشعارات مهامي."
+        }
+      );
+
+    }
+
+    else{
+
+      alert(
+        "لم يتم السماح بالإشعارات."
+      );
+
+    }
+
+  }catch(error){
+
+    alert(
+      "تعذر تفعيل الإشعارات من المتصفح."
+    );
+
+  }
+
+}
+
+
+// ==================================================
+// فحص التذكيرات
+// ==================================================
+
+function checkReminders(){
+
+  const now =
+    new Date();
+
+
+  const currentDate =
+    todayString();
+
+
+  const currentTime =
+    String(
+      now.getHours()
+    ).padStart(2,"0")
+    +
+    ":" +
+    String(
+      now.getMinutes()
+    ).padStart(2,"0");
+
+
+  let changed = false;
+
+
+  reminders.forEach(
+    reminder => {
+
+      if(!reminder.active)
+        return;
+
+
+      if(
+        reminder.date === currentDate &&
+        reminder.time === currentTime &&
+        !reminder.notified
+      ){
+
+        showReminderNotification(
+          reminder
+        );
+
+
+        reminder.notified = true;
+
+        changed = true;
+
+      }
+
+
+      /*
+        إذا أصبح التذكير في يوم جديد
+        نسمح له بالعمل مرة أخرى.
+      */
+
+      if(
+        reminder.date !== currentDate
+      ){
+
+        if(
+          reminder.notified &&
+          reminder.date > currentDate
+        ){
+
+          reminder.notified = false;
+
+          changed = true;
+
+        }
+
+      }
+
+    }
+  );
+
+
+  if(changed)
+    saveReminders();
+
+}
+
+
+// ==================================================
+// إظهار الإشعار
+// ==================================================
+
+function showReminderNotification(
+  reminder
+){
+
+  const title =
+    "🔔 مهامي";
+
+
+  const body =
+    reminder.title +
+    (
+      reminder.notes
+      ? "\n" + reminder.notes
+      : ""
+    );
+
+
+  if(
+    "Notification" in window &&
+    Notification.permission === "granted"
+  ){
+
+    try{
+
+      new Notification(
+        title,
+        {
+          body:body,
+          icon:""
+        }
+      );
+
+      return;
+
+    }catch(error){}
+
+  }
+
+
+  alert(
+    title +
+    "\n\n" +
+    body
+  );
+
+}
+
+
+// فحص كل دقيقة
+
+setInterval(
+  checkReminders,
+  30000
+);
+
+
+// فحص عند فتح التطبيق
+
+checkReminders();
+
+
+// ==================================================
+// الصفحات
+// ==================================================
+
+function showPage(
+  page,
+  button
+){
 
   document
-    .getElementById("tasksPage")
+    .getElementById(
+      "tasksPage"
+    )
     .classList.add("hidden");
 
-  document
-    .getElementById("todayPage")
-    .classList.add("hidden");
 
   document
-    .getElementById("completedPage")
+    .getElementById(
+      "todayPage"
+    )
     .classList.add("hidden");
 
+
   document
-    .getElementById("reportPage")
+    .getElementById(
+      "completedPage"
+    )
+    .classList.add("hidden");
+
+
+  document
+    .getElementById(
+      "remindersPage"
+    )
+    .classList.add("hidden");
+
+
+  document
+    .getElementById(
+      "reportPage"
+    )
     .classList.add("hidden");
 
 
   if(page === "tasks")
-    document.getElementById("tasksPage").classList.remove("hidden");
+
+    document
+      .getElementById(
+        "tasksPage"
+      )
+      .classList.remove("hidden");
+
 
   if(page === "today")
-    document.getElementById("todayPage").classList.remove("hidden");
+
+    document
+      .getElementById(
+        "todayPage"
+      )
+      .classList.remove("hidden");
+
 
   if(page === "completed")
-    document.getElementById("completedPage").classList.remove("hidden");
+
+    document
+      .getElementById(
+        "completedPage"
+      )
+      .classList.remove("hidden");
+
+
+  if(page === "reminders"){
+
+    document
+      .getElementById(
+        "remindersPage"
+      )
+      .classList.remove("hidden");
+
+    renderReminders();
+
+  }
+
 
   if(page === "report")
-    document.getElementById("reportPage").classList.remove("hidden");
+
+    document
+      .getElementById(
+        "reportPage"
+      )
+      .classList.remove("hidden");
 
 
   document
     .querySelectorAll(".tab")
-    .forEach(btn => btn.classList.remove("active"));
+    .forEach(
+      btn =>
+        btn.classList.remove(
+          "active"
+        )
+    );
 
-  button.classList.add("active");
+
+  button.classList.add(
+    "active"
+  );
 
 
   if(page === "report")
@@ -873,23 +1942,27 @@ function showPage(page,button){
 }
 
 
+// ==================================================
+// التقرير
+// ==================================================
+
 function renderReport(){
 
   const month =
-    document.getElementById("reportMonth").value;
+    document.getElementById(
+      "reportMonth"
+    ).value;
 
 
-  if(!month) return;
+  if(!month)
+    return;
 
-
-  /*
-    المهمة تدخل في التقرير الشهري
-    حسب تاريخ إنشائها.
-  */
 
   const monthTasks =
-    tasks.filter(task =>
-      task.createdAt.substring(0,7) === month
+    tasks.filter(
+      task =>
+        task.createdAt.substring(0,7)
+        === month
     );
 
 
@@ -898,7 +1971,9 @@ function renderReport(){
 
 
   const done =
-    monthTasks.filter(task => task.completed).length;
+    monthTasks.filter(
+      task => task.completed
+    ).length;
 
 
   const remaining =
@@ -907,25 +1982,37 @@ function renderReport(){
 
   const percent =
     total === 0
-    ?
-    0
-    :
-    Math.round((done / total) * 100);
+    ? 0
+    : Math.round(
+        (done / total) * 100
+      );
 
 
-  document.getElementById("totalStat").textContent = total;
+  document.getElementById(
+    "totalStat"
+  ).textContent = total;
 
-  document.getElementById("doneStat").textContent = done;
 
-  document.getElementById("remainingStat").textContent = remaining;
+  document.getElementById(
+    "doneStat"
+  ).textContent = done;
 
-  document.getElementById("percentStat").textContent =
+
+  document.getElementById(
+    "remainingStat"
+  ).textContent = remaining;
+
+
+  document.getElementById(
+    "percentStat"
+  ).textContent =
     percent + "%";
 
 
   const monthName =
-    new Date(month + "-01")
-    .toLocaleDateString(
+    new Date(
+      month + "-01"
+    ).toLocaleDateString(
       "ar-YE",
       {
         year:"numeric",
@@ -934,37 +2021,50 @@ function renderReport(){
     );
 
 
-  document.getElementById("reportSummary").innerHTML = `
+  document.getElementById(
+    "reportSummary"
+  ).innerHTML = `
 
     <div class="report-line">
-      📅 الشهر: <strong>${monthName}</strong>
+      📅 الشهر:
+      <strong>
+        ${monthName}
+      </strong>
     </div>
 
     <div class="report-line">
-      📋 إجمالي المهام: <strong>${total}</strong>
+      📋 إجمالي المهام:
+      <strong>${total}</strong>
     </div>
 
     <div class="report-line">
-      ✅ المهام المنجزة: <strong>${done}</strong>
+      ✅ المهام المنجزة:
+      <strong>${done}</strong>
     </div>
 
     <div class="report-line">
-      ⏳ المهام المتبقية: <strong>${remaining}</strong>
+      ⏳ المهام المتبقية:
+      <strong>${remaining}</strong>
     </div>
 
     <div class="report-line">
-      📈 نسبة الإنجاز: <strong>${percent}%</strong>
+      📈 نسبة الإنجاز:
+      <strong>${percent}%</strong>
     </div>
 
   `;
 
 
   const completedBox =
-    document.getElementById("reportCompleted");
+    document.getElementById(
+      "reportCompleted"
+    );
 
 
   const completed =
-    monthTasks.filter(task => task.completed);
+    monthTasks.filter(
+      task => task.completed
+    );
 
 
   if(completed.length === 0){
@@ -975,40 +2075,55 @@ function renderReport(){
   }else{
 
     completedBox.innerHTML =
-      completed.map(task => `
+      completed.map(
+        task => `
 
         <div class="report-line">
 
-          ✅ <strong>
-            ${escapeHTML(task.title)}
+          ✅
+          <strong>
+            ${escapeHTML(
+              task.title
+            )}
           </strong>
 
           <br>
 
           <small>
+
             تاريخ الإنجاز:
+
             ${
               task.completedAt
               ?
-              formatDate(task.completedAt.substring(0,10))
+              formatDate(
+                task.completedAt
+                .substring(0,10)
+              )
               :
               "-"
             }
+
           </small>
 
         </div>
 
-      `).join("");
+      `
+      ).join("");
 
   }
 
 
   const remainingBox =
-    document.getElementById("reportRemaining");
+    document.getElementById(
+      "reportRemaining"
+    );
 
 
   const remainingTasks =
-    monthTasks.filter(task => !task.completed);
+    monthTasks.filter(
+      task => !task.completed
+    );
 
 
   if(remainingTasks.length === 0){
@@ -1019,61 +2134,91 @@ function renderReport(){
   }else{
 
     remainingBox.innerHTML =
-      remainingTasks.map(task => `
+      remainingTasks.map(
+        task => `
 
         <div class="report-line">
 
-          ⏳ <strong>
-            ${escapeHTML(task.title)}
+          ⏳
+          <strong>
+            ${escapeHTML(
+              task.title
+            )}
           </strong>
 
           <br>
 
           <small>
+
             موعد التسليم:
-            ${formatDate(task.date)}
+            ${formatDate(
+              task.date
+            )}
+
           </small>
 
         </div>
 
-      `).join("");
+      `
+      ).join("");
 
   }
 
 
-  document.getElementById("monthlyNotes").value =
+  document.getElementById(
+    "monthlyNotes"
+  ).value =
     monthlyNotes[month] || "";
 
 }
 
 
+// ==================================================
+// حفظ ملاحظات الشهر
+// ==================================================
+
 function saveMonthlyNotes(){
 
   const month =
-    document.getElementById("reportMonth").value;
+    document.getElementById(
+      "reportMonth"
+    ).value;
 
-  if(!month) return;
+
+  if(!month)
+    return;
 
 
   monthlyNotes[month] =
-    document.getElementById("monthlyNotes").value;
+    document.getElementById(
+      "monthlyNotes"
+    ).value;
 
 
   localStorage.setItem(
     "mahamiMonthlyNotes",
-    JSON.stringify(monthlyNotes)
+    JSON.stringify(
+      monthlyNotes
+    )
   );
 
 }
 
 
+// ==================================================
+// طباعة التقرير
+// ==================================================
+
 function printReport(){
 
   const month =
-    document.getElementById("reportMonth").value;
+    document.getElementById(
+      "reportMonth"
+    ).value;
 
 
-  if(!month) return;
+  if(!month)
+    return;
 
 
   renderReport();
@@ -1083,6 +2228,10 @@ function printReport(){
 }
 
 
+// ==================================================
+// تحديث كل شيء
+// ==================================================
+
 function renderAll(){
 
   renderTasks();
@@ -1091,14 +2240,18 @@ function renderAll(){
 
   renderCompleted();
 
+  renderReminders();
+
   renderReport();
 
 }
 
+
+// تشغيل التطبيق
 
 renderAll();
 
 </script>
 
 </body>
-  </html>
+</html>
