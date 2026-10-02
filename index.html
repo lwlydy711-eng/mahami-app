@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>مهامي</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,"Tahoma",sans-serif;
+  background:#f4f7f5;
+  color:#172b24;
+}
+
+header{
+  background:#073b32;
+  color:white;
+  padding:22px 16px;
+  text-align:center;
+  border-radius:0 0 24px 24px;
+}
+
+header h1{
+  margin:0;
+  font-size:28px;
+}
+
+header p{
+  margin:7px 0 0;
+  opacity:.85;
+}
+
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:16px;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:15px;
+  box-shadow:0 4px 15px rgba(0,0,0,.06);
+}
+
+h2{
+  margin-top:0;
+  font-size:20px;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+  padding:13px;
+  margin:7px 0;
+  border:1px solid #d7e1dc;
+  border-radius:12px;
+  font-size:15px;
+  background:#fff;
+}
+
+textarea{
+  min-height:80px;
+  resize:vertical;
+}
+
+button{
+  border:0;
+  border-radius:12px;
+  padding:12px 15px;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.primary{
+  width:100%;
+  background:#087f5b;
+  color:white;
+  margin-top:8px;
+}
+
+.secondary{
+  background:#e8f1ed;
+  color:#073b32;
+}
+
+.danger{
+  background:#ffe8e8;
+  color:#a32626;
+}
+
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  margin-bottom:15px;
+}
+
+.tab{
+  background:white;
+  color:#073b32;
+  border:1px solid #dce7e2;
+  font-size:13px;
+  padding:11px 5px;
+}
+
+.tab.active{
+  background:#073b32;
+  color:white;
+}
+
+.task{
+  border:1px solid #e0e8e4;
+  border-radius:15px;
+  padding:14px;
+  margin:10px 0;
+}
+
+.task.done{
+  opacity:.65;
+}
+
+.task.done .task-title{
+  text-decoration:line-through;
+}
+
+.task-title{
+  font-weight:bold;
+  font-size:17px;
+  margin-bottom:7px;
+}
+
+.meta{
+  font-size:13px;
+  color:#64746d;
+  line-height:1.8;
+}
+
+.priority{
+  display:inline-block;
+  padding:4px 9px;
+  border-radius:20px;
+  font-size:12px;
+  margin-bottom:7px;
+}
+
+.high{
+  background:#ffe3e3;
+  color:#b42318;
+}
+
+.medium{
+  background:#fff0c7;
+  color:#8a6100;
+}
+
+.low{
+  background:#e1f3e9;
+  color:#17633f;
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+
+.actions button{
+  font-size:13px;
+  padding:9px 11px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.stat{
+  background:#f4f8f6;
+  padding:15px;
+  border-radius:14px;
+  text-align:center;
+}
+
+.stat strong{
+  display:block;
+  font-size:25px;
+  color:#087f5b;
+  margin-bottom:4px;
+}
+
+.empty{
+  text-align:center;
+  padding:25px 10px;
+  color:#718078;
+}
+
+.report-title{
+  text-align:center;
+  color:#073b32;
+  margin-bottom:15px;
+}
+
+.report-line{
+  padding:10px 0;
+  border-bottom:1px solid #e5ebe8;
+}
+
+.report-line:last-child{
+  border-bottom:0;
+}
+
+.note-box{
+  background:#f7faf8;
+  border-radius:13px;
+  padding:12px;
+  margin-top:10px;
+}
+
+.hidden{
+  display:none;
+}
+
+@media(max-width:450px){
+  .tabs{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>📋 مهامي</h1>
+  <p>متابعة مهام العمل والإنجازات</p>
+</header>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('tasks',this)">📋 المهام</button>
+    <button class="tab" onclick="showPage('today',this)">📅 اليوم</button>
+    <button class="tab" onclick="showPage('completed',this)">✅ المكتملة</button>
+    <button class="tab" onclick="showPage('report',this)">📊 التقرير</button>
+  </div>
+
+
+  <!-- إضافة مهمة -->
+  <section id="tasksPage">
+
+    <div class="card">
+      <h2>➕ إضافة مهمة جديدة</h2>
+
+      <input id="taskTitle" type="text" placeholder="ما هي المهمة؟">
+
+      <select id="taskPriority">
+        <option value="high">🔴 عاجلة</option>
+        <option value="medium" selected>🟡 عادية</option>
+        <option value="low">🟢 منخفضة</option>
+      </select>
+
+      <label>📅 موعد التسليم</label>
+      <input id="taskDate" type="date">
+
+      <label>⏰ وقت التسليم</label>
+      <input id="taskTime" type="time">
+
+      <textarea id="taskNotes" placeholder="ملاحظات عن المهمة..."></textarea>
+
+      <button class="primary" onclick="addTask()">➕ إضافة المهمة</button>
+    </div>
+
+    <div class="card">
+      <h2>🔎 البحث في المهام</h2>
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="اكتب اسم المهمة..."
+        oninput="renderTasks()"
+      >
+    </div>
+
+    <div class="card">
+      <h2>📋 كل المهام</h2>
+      <div id="allTasks"></div>
+    </div>
+
+  </section>
+
+
+  <!-- اليوم -->
+  <section id="todayPage" class="hidden">
+
+    <div class="card">
+      <h2>📅 مهام اليوم</h2>
+      <div id="todayTasks"></div>
+    </div>
+
+  </section>
+
+
+  <!-- المكتملة -->
+  <section id="completedPage" class="hidden">
+
+    <div class="card">
+      <h2>✅ المهام المكتملة</h2>
+      <div id="completedTasks"></div>
+    </div>
+
+  </section>
+
+
+  <!-- التقرير -->
+  <section id="reportPage" class="hidden">
+
+    <div class="card">
+
+      <h2 class="report-title">📊 التقرير الشهري</h2>
+
+      <label>اختر الشهر</label>
+      <input id="reportMonth" type="month" onchange="renderReport()">
+
+      <div class="stats">
+
+        <div class="stat">
+          <strong id="totalStat">0</strong>
+          إجمالي المهام
+        </div>
+
+        <div class="stat">
+          <strong id="doneStat">0</strong>
+          المهام المنجزة
+        </div>
+
+        <div class="stat">
+          <strong id="remainingStat">0</strong>
+          المهام المتبقية
+        </div>
+
+        <div class="stat">
+          <strong id="percentStat">0%</strong>
+          نسبة الإنجاز
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+      <h2>📌 ملخص الشهر</h2>
+      <div id="reportSummary"></div>
+    </div>
+
+
+    <div class="card">
+      <h2>🏆 ما أنجزته خلال الشهر</h2>
+      <div id="reportCompleted"></div>
+    </div>
+
+
+    <div class="card">
+      <h2>⏳ المهام غير المكتملة</h2>
+      <div id="reportRemaining"></div>
+    </div>
+
+
+    <div class="card">
+
+      <h2>📝 ملاحظات الشهر</h2>
+
+      <textarea
+        id="monthlyNotes"
+        placeholder="اكتب أهم إنجازاتك، وما يحتاج إلى اهتمام، وأي ملاحظات للشهر..."
+        oninput="saveMonthlyNotes()"
+      ></textarea>
+
+    </div>
+
+
+    <div class="card">
+
+      <button class="primary" onclick="printReport()">
+        📄 طباعة / حفظ التقرير
+      </button>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<script>
+
+let tasks = JSON.parse(localStorage.getItem("mahamiTasks")) || [];
+
+let monthlyNotes =
+  JSON.parse(localStorage.getItem("mahamiMonthlyNotes")) || {};
+
+
+function saveTasks(){
+  localStorage.setItem("mahamiTasks", JSON.stringify(tasks));
+}
+
+
+function generateId(){
+  return Date.now() + Math.random().toString(16).slice(2);
+}
+
+
+function todayString(){
+
+  const d = new Date();
+
+  const year = d.getFullYear();
+
+  const month = String(d.getMonth()+1).padStart(2,"0");
+
+  const day = String(d.getDate()).padStart(2,"0");
+
+  return `${year}-${month}-${day}`;
+}
+
+
+function currentMonth(){
+
+  const d = new Date();
+
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+
+}
+
+
+document.getElementById("taskDate").value = todayString();
+
+document.getElementById("reportMonth").value = currentMonth();
+
+
+function addTask(){
+
+  const title =
+    document.getElementById("taskTitle").value.trim();
+
+  if(!title){
+
+    alert("اكتب اسم المهمة أولًا");
+
+    return;
+  }
+
+  const task = {
+
+    id: generateId(),
+
+    title:title,
+
+    priority:
+      document.getElementById("taskPriority").value,
+
+    date:
+      document.getElementById("taskDate").value,
+
+    time:
+      document.getElementById("taskTime").value,
+
+    notes:
+      document.getElementById("taskNotes").value.trim(),
+
+    createdAt:
+      new Date().toISOString(),
+
+    completed:false,
+
+    completedAt:null
+
+  };
+
+
+  tasks.unshift(task);
+
+  saveTasks();
+
+  document.getElementById("taskTitle").value = "";
+
+  document.getElementById("taskTime").value = "";
+
+  document.getElementById("taskNotes").value = "";
+
+  renderAll();
+
+}
+
+
+function priorityText(priority){
+
+  if(priority === "high")
+    return '<span class="priority high">🔴 عاجلة</span>';
+
+  if(priority === "medium")
+    return '<span class="priority medium">🟡 عادية</span>';
+
+  return '<span class="priority low">🟢 منخفضة</span>';
+
+}
+
+
+function formatDate(date){
+
+  if(!date) return "بدون موعد";
+
+  const parts = date.split("-");
+
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+}
+
+
+function taskHTML(task){
+
+  return `
+
+    <div class="task ${task.completed ? "done" : ""}">
+
+      <div>
+        ${priorityText(task.priority)}
+      </div>
+
+      <div class="task-title">
+        ${escapeHTML(task.title)}
+      </div>
+
+      <div class="meta">
+
+        📅 التسليم:
+        ${formatDate(task.date)}
+
+        ${task.time ? " — ⏰ " + task.time : ""}
+
+        <br>
+
+        📝 الملاحظات:
+        ${task.notes ? escapeHTML(task.notes) : "لا توجد"}
+
+        <br>
+
+        📌 أضيفت:
+        ${formatDate(task.createdAt.substring(0,10))}
+
+        ${
+          task.completedAt
+          ?
+          "<br>✅ أُنجزت: " +
+          formatDate(task.completedAt.substring(0,10))
+          :
+          ""
+        }
+
+      </div>
+
+
+      <div class="actions">
+
+        ${
+          task.completed
+          ?
+          `<button class="secondary" onclick="uncompleteTask('${task.id}')">
+            ↩️ إعادة للمفتوحة
+          </button>`
+          :
+          `<button class="secondary" onclick="completeTask('${task.id}')">
+            ✅ تم الإنجاز
+          </button>`
+        }
+
+
+        <button class="secondary" onclick="editTask('${task.id}')">
+          ✏️ تعديل
+        </button>
+
+
+        <button class="secondary" onclick="tomorrowTask('${task.id}')">
+          🔄 غدًا
+        </button>
+
+
+        <button class="danger" onclick="deleteTask('${task.id}')">
+          🗑️ حذف
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+function escapeHTML(text){
+
+  return text
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+function renderTasks(){
+
+  const search =
+    document.getElementById("searchInput")
+    .value
+    .trim()
+    .toLowerCase();
+
+
+  let filtered = tasks.filter(task => {
+
+    if(!search) return true;
+
+    return task.title.toLowerCase().includes(search);
+
+  });
+
+
+  const box =
+    document.getElementById("allTasks");
+
+
+  if(filtered.length === 0){
+
+    box.innerHTML =
+      '<div class="empty">لا توجد مهام حاليًا 📋</div>';
+
+    return;
+  }
+
+
+  box.innerHTML =
+    filtered.map(taskHTML).join("");
+
+}
+
+
+function renderToday(){
+
+  const today = todayString();
+
+  const list =
+    tasks.filter(task => task.date === today && !task.completed);
+
+
+  const box =
+    document.getElementById("todayTasks");
+
+
+  if(list.length === 0){
+
+    box.innerHTML =
+      '<div class="empty">🎉 لا توجد مهام متبقية لليوم</div>';
+
+    return;
+  }
+
+
+  box.innerHTML =
+    list.map(taskHTML).join("");
+
+}
+
+
+function renderCompleted(){
+
+  const list =
+    tasks.filter(task => task.completed);
+
+
+  const box =
+    document.getElementById("completedTasks");
+
+
+  if(list.length === 0){
+
+    box.innerHTML =
+      '<div class="empty">لم تنجز أي مهمة بعد.</div>';
+
+    return;
+  }
+
+
+  box.innerHTML =
+    list.map(taskHTML).join("");
+
+}
+
+
+function completeTask(id){
+
+  const task =
+    tasks.find(t => t.id === id);
+
+  if(!task) return;
+
+  task.completed = true;
+
+  task.completedAt =
+    new Date().toISOString();
+
+
+  saveTasks();
+
+  renderAll();
+
+}
+
+
+function uncompleteTask(id){
+
+  const task =
+    tasks.find(t => t.id === id);
+
+  if(!task) return;
+
+  task.completed = false;
+
+  task.completedAt = null;
+
+  saveTasks();
+
+  renderAll();
+
+}
+
+
+function deleteTask(id){
+
+  if(!confirm("هل تريد حذف هذه المهمة؟")) return;
+
+  tasks =
+    tasks.filter(t => t.id !== id);
+
+  saveTasks();
+
+  renderAll();
+
+}
+
+
+function editTask(id){
+
+  const task =
+    tasks.find(t => t.id === id);
+
+  if(!task) return;
+
+
+  const title =
+    prompt("عدّل اسم المهمة:",task.title);
+
+  if(title === null) return;
+
+  if(!title.trim()) return;
+
+
+  task.title = title.trim();
+
+
+  const notes =
+    prompt(
+      "عدّل الملاحظات:",
+      task.notes || ""
+    );
+
+  if(notes !== null)
+    task.notes = notes;
+
+
+  saveTasks();
+
+  renderAll();
+
+}
+
+
+function tomorrowTask(id){
+
+  const task =
+    tasks.find(t => t.id === id);
+
+  if(!task) return;
+
+
+  const d = new Date();
+
+  d.setDate(d.getDate()+1);
+
+
+  task.date =
+    `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+
+
+  saveTasks();
+
+  renderAll();
+
+
+  alert("تم نقل المهمة إلى الغد 🔄");
+
+}
+
+
+function showPage(page,button){
+
+  document
+    .getElementById("tasksPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("todayPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("completedPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("reportPage")
+    .classList.add("hidden");
+
+
+  if(page === "tasks")
+    document.getElementById("tasksPage").classList.remove("hidden");
+
+  if(page === "today")
+    document.getElementById("todayPage").classList.remove("hidden");
+
+  if(page === "completed")
+    document.getElementById("completedPage").classList.remove("hidden");
+
+  if(page === "report")
+    document.getElementById("reportPage").classList.remove("hidden");
+
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(btn => btn.classList.remove("active"));
+
+  button.classList.add("active");
+
+
+  if(page === "report")
+    renderReport();
+
+}
+
+
+function renderReport(){
+
+  const month =
+    document.getElementById("reportMonth").value;
+
+
+  if(!month) return;
+
+
+  /*
+    المهمة تدخل في التقرير الشهري
+    حسب تاريخ إنشائها.
+  */
+
+  const monthTasks =
+    tasks.filter(task =>
+      task.createdAt.substring(0,7) === month
+    );
+
+
+  const total =
+    monthTasks.length;
+
+
+  const done =
+    monthTasks.filter(task => task.completed).length;
+
+
+  const remaining =
+    total - done;
+
+
+  const percent =
+    total === 0
+    ?
+    0
+    :
+    Math.round((done / total) * 100);
+
+
+  document.getElementById("totalStat").textContent = total;
+
+  document.getElementById("doneStat").textContent = done;
+
+  document.getElementById("remainingStat").textContent = remaining;
+
+  document.getElementById("percentStat").textContent =
+    percent + "%";
+
+
+  const monthName =
+    new Date(month + "-01")
+    .toLocaleDateString(
+      "ar-YE",
+      {
+        year:"numeric",
+        month:"long"
+      }
+    );
+
+
+  document.getElementById("reportSummary").innerHTML = `
+
+    <div class="report-line">
+      📅 الشهر: <strong>${monthName}</strong>
+    </div>
+
+    <div class="report-line">
+      📋 إجمالي المهام: <strong>${total}</strong>
+    </div>
+
+    <div class="report-line">
+      ✅ المهام المنجزة: <strong>${done}</strong>
+    </div>
+
+    <div class="report-line">
+      ⏳ المهام المتبقية: <strong>${remaining}</strong>
+    </div>
+
+    <div class="report-line">
+      📈 نسبة الإنجاز: <strong>${percent}%</strong>
+    </div>
+
+  `;
+
+
+  const completedBox =
+    document.getElementById("reportCompleted");
+
+
+  const completed =
+    monthTasks.filter(task => task.completed);
+
+
+  if(completed.length === 0){
+
+    completedBox.innerHTML =
+      '<div class="empty">لا توجد مهام مكتملة في هذا الشهر.</div>';
+
+  }else{
+
+    completedBox.innerHTML =
+      completed.map(task => `
+
+        <div class="report-line">
+
+          ✅ <strong>
+            ${escapeHTML(task.title)}
+          </strong>
+
+          <br>
+
+          <small>
+            تاريخ الإنجاز:
+            ${
+              task.completedAt
+              ?
+              formatDate(task.completedAt.substring(0,10))
+              :
+              "-"
+            }
+          </small>
+
+        </div>
+
+      `).join("");
+
+  }
+
+
+  const remainingBox =
+    document.getElementById("reportRemaining");
+
+
+  const remainingTasks =
+    monthTasks.filter(task => !task.completed);
+
+
+  if(remainingTasks.length === 0){
+
+    remainingBox.innerHTML =
+      '<div class="empty">🎉 لا توجد مهام متبقية.</div>';
+
+  }else{
+
+    remainingBox.innerHTML =
+      remainingTasks.map(task => `
+
+        <div class="report-line">
+
+          ⏳ <strong>
+            ${escapeHTML(task.title)}
+          </strong>
+
+          <br>
+
+          <small>
+            موعد التسليم:
+            ${formatDate(task.date)}
+          </small>
+
+        </div>
+
+      `).join("");
+
+  }
+
+
+  document.getElementById("monthlyNotes").value =
+    monthlyNotes[month] || "";
+
+}
+
+
+function saveMonthlyNotes(){
+
+  const month =
+    document.getElementById("reportMonth").value;
+
+  if(!month) return;
+
+
+  monthlyNotes[month] =
+    document.getElementById("monthlyNotes").value;
+
+
+  localStorage.setItem(
+    "mahamiMonthlyNotes",
+    JSON.stringify(monthlyNotes)
+  );
+
+}
+
+
+function printReport(){
+
+  const month =
+    document.getElementById("reportMonth").value;
+
+
+  if(!month) return;
+
+
+  renderReport();
+
+  window.print();
+
+}
+
+
+function renderAll(){
+
+  renderTasks();
+
+  renderToday();
+
+  renderCompleted();
+
+  renderReport();
+
+}
+
+
+renderAll();
+
+</script>
+
+</body>
+  </html>
